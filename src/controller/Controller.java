@@ -35,7 +35,7 @@ public class Controller {
 				case 1:
 					view.printMessage("--------- \nCargar peliculas");
 					modelo = new Modelo();
-					modelo.cargarArreglo();
+					modelo.cargarArreglo(2);
 					view.printMessage("--------- \nLista de peliculas cargada");
 					view.printMessage("--------- \nLa primera pelicula de la base de datos es: ");
 					modelo.ImprimirPelicula(0);
@@ -52,14 +52,19 @@ public class Controller {
 						view.printMessage("--------- \nEscriba el nombre del director en el que esta interesado");
 						String nombreDirector = lector.next(); 
 						String apellidoDirector = lector.next(); 
-						view.printMessage("Buscando peliuclas de buena calificacion dirigidas por " + nombreDirector + " " + apellidoDirector);
-						float[] rta = modelo.buscarPeliculasBuenas(nombreDirector + " " + apellidoDirector);
-						if (rta==null) {
-							view.printMessage("--------- \nNo hay peliculas dirigidas por la persona dada");
+						if(nombreDirector!= null && apellidoDirector!= null) {
+							view.printMessage("Buscando peliuclas de buena calificacion dirigidas por " + nombreDirector + " " + apellidoDirector);
+							float[] rta = modelo.buscarPeliculasBuenas(nombreDirector + " " + apellidoDirector);
+							if (rta==null) {
+								view.printMessage("--------- \nNo hay peliculas dirigidas por la persona dada");
+							}
+							else {
+								view.printMessage("--------- \nEl director posee "+ (int) rta[0] + " peliculas con buena calificacion");
+								view.printMessage("--------- \nSu promedio de calificacion es de "+ rta[1]);
+							}
 						}
 						else {
-							view.printMessage("--------- \nEl director posee "+ (int) rta[0] + " peliculas con buena calificacion");
-							view.printMessage("--------- \nSu promedio de calificacion es de "+ rta[1]);
+							view.printMessage("Error, porfavor escriba nombre y apellido.");
 						}
 					}
 					break;
@@ -112,8 +117,13 @@ public class Controller {
 						view.printMessage("--------- \nEscriba el nombre del director que desea conocer");
 						String nombreDirector = lector.next(); 
 						String apellidoDirector = lector.next(); 
-						view.printMessage("El director que quieres conocer es " + nombreDirector + " " + apellidoDirector);
-						modelo.darPeliculasDirector(nombreDirector+ " " + apellidoDirector);	
+						if(nombreDirector!= null && apellidoDirector!= null) {
+							view.printMessage("El director que quieres conocer es " + nombreDirector + " " + apellidoDirector);
+							modelo.darPeliculasDirector(nombreDirector+ " " + apellidoDirector);
+						}
+						else {
+							view.printMessage("Error, porfavor escriba nombre y apellido.");
+						}
 					}
 					break;
 
@@ -145,9 +155,44 @@ public class Controller {
 					break;
 
 				case 7:
-
+					if(!modelo.darCarga()) {
+						view.printMessage("No hay peliculas cargadas, por favor cargar las peliculas");
+					}
+					else {
+						view.printMessage("--------- \nEscriba el tipo de ranking que desea");
+						view.printMessage("1. Peliculas mas votadas");
+						view.printMessage("2. Peliculas menos votadas");
+						view.printMessage("3. Peliculas mejor calificadas");
+						view.printMessage("4. Peliculas peor calificadas");
+						short ranking = lector.nextShort();
+						switch(ranking) {
+						
+							case 1:
+									view.printMessage("---------\nGenerando lista de las 10 peliculas mas votadas");
+									modelo.ShellSortCount(true);
+								break;
+								
+							case 2:
+									view.printMessage("---------\nGenerando lista de las 10 peliculas menos votadas");
+									modelo.ShellSortCount(false);
+								break;
+								
+							case 3:
+									view.printMessage("---------\nGenerando lista de las 10 peliculas mejor calificadas");
+									modelo.ShellSortAverage(true);
+								break;
+								
+							case 4:
+									view.printMessage("---------\nGenerando lista de las 10 peliculas peor calificadas");
+									modelo.ShellSortAverage(false);
+								break;
+								
+							default:
+									view.printMessage("--------- \n Opcion Invalida !! \n---------");
+								break;
+						}
+					}
 					break;
-
 				default: 
 					view.printMessage("--------- \n Opcion Invalida !! \n---------");
 					break;
@@ -155,7 +200,7 @@ public class Controller {
 			}
 		}
 		catch(Exception e) {
-			view.printMessage("--------- \n Opcion Invalida !! \n---------");
+			e.printStackTrace();
 			run();
 		}
 	}

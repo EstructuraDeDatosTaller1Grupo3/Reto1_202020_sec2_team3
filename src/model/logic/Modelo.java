@@ -5,9 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-
-import com.opencsv.bean.CsvToBeanBuilder;
-
 import clases.Pelicula;
 import clases.ShellSort;
 import model.data_structures.ArregloDinamico;
@@ -94,11 +91,11 @@ public class Modelo {
 		}
 	}
 	
-	public void cargarArreglo()
+	public void cargarArreglo(int index)
 	{
 		datos = new ArregloDinamico(10);
-		String archivo = "./data/SmallMoviesDetailsCleaned.csv";
-		String archivo2 = "./data/MoviesCastingRaw-small.csv";
+		String archivo = "./data/AllMoviesDetailsCleaned.csv";
+		String archivo2 = "./data/AllMoviesCastingRaw.csv";
 		String linea = "";
 		String linea2 = "";
 		try 
@@ -215,20 +212,20 @@ public class Modelo {
 		for (int i = 0; i < datos.contarDatos(); i++) 
 		{
 			Pelicula act = (Pelicula) datos.darElemento(i);
-			if(act.darGenero().equalsIgnoreCase(genero))
+			if(act.darGenero().toLowerCase().contains(genero.toLowerCase()))
 			{
 				pelis.agregarAlFinal(act.darNombrePelicula());
 				promedio += act.darVotosPromedio(); 
 			}
 		}
 		promedio = promedio/pelis.contarDatos(); 
-		System.out.println("----------");
-		System.out.println("Hay " + pelis.contarDatos() + " películas de ese género");
 		if (pelis.contarDatos()>0){
 			System.out.println("Las películas de ese género son: ");
 			for(int i=0;i<pelis.contarDatos();i++) {
 				System.out.println(pelis.darElemento(i));	
 			}
+			System.out.println("----------");
+			System.out.println("Hay " + pelis.contarDatos() + " películas de ese género");
 			System.out.println("----------");
 			System.out.println("El promedio de votación en esas peliculas es de " + promedio);
 		}
@@ -314,5 +311,23 @@ public class Modelo {
 			System.out.println("----------");
 			System.out.println("La persona dada no ha dirigido ninguna pelicula");
 		}
+	}
+	
+	public ArregloDinamico<Pelicula> rankingGenero(int index, String genero, boolean isCOUNT)
+	{
+		ArregloDinamico<Pelicula> peliculasEncontradas = new ArregloDinamico<>(20);
+		float contador = 0.0f;
+		for (int i = 0; i < darTamano(); i++) { 
+			if (datos.darElemento(i).equals(genero) && datos.contarDatos()>0.0){
+				peliculasEncontradas.agregarAlFinal((Pelicula)datos.darElemento(i));
+				if (isCOUNT){
+					contador+= ((Pelicula) datos.darElemento(i)).darCantidadVotos();
+				}else{ 
+					contador += ((Pelicula) datos.darElemento(i)).darVotosPromedio();
+				}
+			}
+		}
+		
+		return peliculasEncontradas;
 	}
 }
